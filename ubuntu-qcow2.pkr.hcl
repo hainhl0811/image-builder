@@ -36,16 +36,13 @@ source "qemu" "ubuntu" {
 
   # Boot command for Ubuntu 22.04 autoinstall
   boot_command = [
-    "<wait>c<wait>",
-    "linux /casper/vmlinuz --- autoinstall ds='nocloud-net;s=http://{{ .HTTPIP }}:{{ .HTTPPort }}/'",
-    "<enter><wait>",
-    "initrd /casper/initrd",
-    "<enter><wait>",
-    "boot",
-    "<enter>"
+    "<wait>e<wait>",
+    "<down><down><down><end>",
+    " autoinstall ds=nocloud-net\\;s=http://{{ .HTTPIP }}:{{ .HTTPPort }}/",
+    "<F10>"
   ]
 
-  boot_wait = "3s"
+  boot_wait = "5s"
 }
 
 build {
