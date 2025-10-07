@@ -37,15 +37,15 @@ source "qemu" "ubuntu" {
 
   http_directory = "http"  # will serve cloud-init (user-data/meta-data)
 
-  ssh_username = "ubuntu"   # autoinstall will create user 'ubuntu' per user-data below
-  ssh_password = "ubuntu"   # temporary password set in user-data
-  ssh_timeout  = "30m"
+  ssh_username = "ubuntu"   # default user created by Ubuntu
+  ssh_password = "ubuntu"   # we'll set this via provisioning
+  ssh_timeout  = "45m"      # give more time for installation
 
-  # Boot command for Ubuntu 22.04 with preseed
+  # Boot command for Ubuntu 22.04 - minimal approach
   boot_command = [
     "<wait><wait><wait><esc><wait><wait>",
     "c<wait><wait>",
-    "linux /casper/vmlinuz file=/cdrom/preseed/ubuntu-server.seed auto=true priority=critical url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/preseed.cfg ---<enter>",
+    "linux /casper/vmlinuz auto=true priority=critical ---<enter>",
     "initrd /casper/initrd<enter>",
     "boot<enter>"
   ]
