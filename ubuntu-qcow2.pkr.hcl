@@ -22,11 +22,17 @@ source "qemu" "ubuntu" {
   iso_checksum     = "file:https://releases.ubuntu.com/22.04/SHA256SUMS"
   output_directory = "output/${var.image_name}"
 
-  # qcow2 output format
-  format     = "qcow2"
-  disk_size  = 20480    # 20GB
-  accelerator = "kvm"
-  headless    = true
+  # qcow2 output format optimized for OpenStack
+  format           = "qcow2"
+  disk_size        = "20G"
+  disk_interface   = "virtio"
+  net_device       = "virtio-net"
+  accelerator      = "kvm"
+  headless         = true
+  qemuargs = [
+    ["-cpu", "host"],
+    ["-m", "2048M"]
+  ]
 
   http_directory = "http"  # will serve cloud-init (user-data/meta-data)
 

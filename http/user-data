@@ -2,7 +2,7 @@
 autoinstall:
   version: 1
   identity:
-    hostname: packer-ubuntu
+    hostname: ubuntu-cloud
     username: ubuntu
     password: "$6$rounds=4096$saltsalt$YwFyN0jK5p6k8kx/k1m5H9K8Z0L.M9N0P1Q2R3S4T5U6V7W8X9Y0Z1A2B3C4D5E6F7G8H9I0J1K2L3M4N5O6P7Q0"
   ssh:
@@ -11,9 +11,19 @@ autoinstall:
   locale: en_US
   keyboard:
     layout: us
+  network:
+    network:
+      version: 2
+      ethernets:
+        ens3:
+          dhcp4: yes
   storage:
     layout:
       name: direct
+  packages:
+    - cloud-init
+    - qemu-guest-agent
   late-commands:
     - echo 'ubuntu ALL=(ALL) NOPASSWD:ALL' > /target/etc/sudoers.d/ubuntu
     - curtin in-target --target=/target -- chmod 440 /etc/sudoers.d/ubuntu
+    - curtin in-target --target=/target -- systemctl enable qemu-guest-agent
