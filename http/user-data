@@ -21,10 +21,10 @@ autoinstall:
   packages:
     - qemu-guest-agent
     - openssh-server
+  user-data:
+    disable_root: false
   late-commands:
     - echo 'ubuntu ALL=(ALL) NOPASSWD:ALL' > /target/etc/sudoers.d/ubuntu
     - curtin in-target --target=/target -- chmod 440 /etc/sudoers.d/ubuntu
-    - curtin in-target --target=/target -- apt-get update
-    - curtin in-target --target=/target -- apt-get -y upgrade
     - curtin in-target --target=/target -- systemctl enable ssh
     - curtin in-target --target=/target -- systemctl enable qemu-guest-agent

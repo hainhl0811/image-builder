@@ -34,17 +34,18 @@ source "qemu" "ubuntu" {
   ssh_password = "ubuntu"   # temporary password set in user-data
   ssh_timeout  = "30m"
 
-  # Example kernel bootline for Ubuntu autoinstall — you may need to tweak timing/paths for different ISOs
+  # Boot command for Ubuntu 22.04 autoinstall
   boot_command = [
-    "<esc><wait>",
-    "set gfxpayload=1024x768<enter>",
-    "/casper/vmlinuz ",
-    "autoinstall ",
-    "ds=nocloud-net;s=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ ",
-    "quiet --- <enter>"
+    "<wait>c<wait>",
+    "linux /casper/vmlinuz --- autoinstall ds='nocloud-net;s=http://{{ .HTTPIP }}:{{ .HTTPPort }}/'",
+    "<enter><wait>",
+    "initrd /casper/initrd",
+    "<enter><wait>",
+    "boot",
+    "<enter>"
   ]
 
-  boot_wait = "5s"
+  boot_wait = "3s"
 }
 
 build {
