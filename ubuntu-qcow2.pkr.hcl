@@ -42,10 +42,12 @@ source "qemu" "ubuntu" {
 
   # Boot command for Ubuntu 22.04 autoinstall
   boot_command = [
-    "<wait>e<wait>",
-    "<down><down><down><end>",
-    " autoinstall ds=nocloud-net\\;s=http://{{ .HTTPIP }}:{{ .HTTPPort }}/",
-    "<F10>"
+    "<wait5>",
+    "e<wait>",
+    "<down><down><down>",
+    "<end><wait>",
+    "<bs><bs><bs><bs>autoinstall ds=nocloud-net\\;s=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ ---<wait>",
+    "<f10><wait>"
   ]
 
   boot_wait = "5s"
