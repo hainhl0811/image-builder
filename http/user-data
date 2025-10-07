@@ -4,10 +4,11 @@ autoinstall:
   identity:
     hostname: packer-image
     username: ubuntu
-    # best to use SSH key; set the key from packer variable or CI secret
-    ssh:
-      authorized-keys:
-        - ${ssh_authorized_key}
+    # Temporary password "ubuntu" (hashed) - will be replaced by SSH key later
+    password: "$6$rounds=4096$8FJSweWHUKEsmTDX$sIpcYNkHJKR4Jqw8R4F7P0DHvyqPwEfM8.uLDD1OKLxp0gEZdGN.JC.2u5qKDILLFXqJbp0QLqmPBqCb9JNIl/"
+  ssh:
+    install-server: true
+    allow-pw: true
   locale: en_US.UTF-8
   keyboard:
     layout: us
@@ -19,7 +20,11 @@ autoinstall:
       name: direct
   packages:
     - qemu-guest-agent
+    - openssh-server
   late-commands:
+    - echo 'ubuntu ALL=(ALL) NOPASSWD:ALL' > /target/etc/sudoers.d/ubuntu
+    - curtin in-target --target=/target -- chmod 440 /etc/sudoers.d/ubuntu
     - curtin in-target --target=/target -- apt-get update
     - curtin in-target --target=/target -- apt-get -y upgrade
+    - curtin in-target --target=/target -- systemctl enable ssh
     - curtin in-target --target=/target -- systemctl enable qemu-guest-agent

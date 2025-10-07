@@ -31,6 +31,7 @@ source "qemu" "ubuntu" {
   http_directory = "http"  # will serve cloud-init (user-data/meta-data)
 
   ssh_username = "ubuntu"   # autoinstall will create user 'ubuntu' per user-data below
+  ssh_password = "ubuntu"   # temporary password set in user-data
   ssh_timeout  = "30m"
 
   # Example kernel bootline for Ubuntu autoinstall — you may need to tweak timing/paths for different ISOs
@@ -49,6 +50,17 @@ source "qemu" "ubuntu" {
 build {
   name    = "ubuntu-qcow2"
   sources = ["source.qemu.ubuntu"]
+
+  # Add SSH key if provided
+  provisioner "shell" {
+    inline = [
+      "mkdir -p ~/.ssh",
+      "chmod 700 ~/.ssh",
+      "echo '${var.ssh_authorized_key}' >> ~/.ssh/authorized_keys",
+      "chmod 600 ~/.ssh/authorized_keys"
+    ]
+    only_if = "${var.ssh_authorized_key != \"\"}"
+  }
 
   provisioner "shell" {
     script = "scripts/install.sh"
