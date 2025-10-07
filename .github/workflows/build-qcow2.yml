@@ -13,16 +13,39 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup dependencies (on runner)
+      - name: Check dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y qemu-system-x86 qemu-utils curl lsb-release
-          # Install packer on the runner (if not present)
-          if ! command -v packer >/dev/null; then
-            curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
-            sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
-            sudo apt-get update && sudo apt-get install -y packer
+          echo "Checking required dependencies..."
+          MISSING_DEPS=()
+          
+          if ! command -v packer &> /dev/null; then
+            MISSING_DEPS+=("packer")
           fi
+          
+          if ! command -v qemu-system-x86_64 &> /dev/null; then
+            MISSING_DEPS+=("qemu-system-x86")
+          fi
+          
+          if ! command -v qemu-img &> /dev/null; then
+            MISSING_DEPS+=("qemu-utils")
+          fi
+          
+          if [ ${#MISSING_DEPS[@]} -ne 0 ]; then
+            echo "❌ Missing dependencies: ${MISSING_DEPS[*]}"
+            echo ""
+            echo "Please install them on your self-hosted runner:"
+            echo "  sudo apt-get update"
+            echo "  sudo apt-get install -y qemu-system-x86 qemu-utils"
+            echo "  # For Packer:"
+            echo "  curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -"
+            echo "  sudo apt-add-repository \"deb [arch=amd64] https://apt.releases.hashicorp.com \$(lsb_release -cs) main\""
+            echo "  sudo apt-get update && sudo apt-get install -y packer"
+            exit 1
+          fi
+          
+          echo "✅ All dependencies are installed"
+          packer version
+          qemu-system-x86_64 --version | head -n1
 
       - name: Packer init & validate
         env:
