@@ -19,8 +19,8 @@ variable "ssh_authorized_key" {
 
 source "qemu" "ubuntu" {
   iso_url          = "https://releases.ubuntu.com/22.04/ubuntu-22.04-live-server-amd64.iso"
-  iso_checksum     = "sha256:REPLACE_WITH_ISO_SHA256"
-  output_directory = "output/{{user `image_name`}}"
+  iso_checksum     = "sha256:84aeaf7823c8c61baa0ae862d0a06b03409394800000b3235854a6b38eb4856f"
+  output_directory = "output/${var.image_name}"
 
   # qcow2 output format
   format     = "qcow2"
@@ -28,7 +28,7 @@ source "qemu" "ubuntu" {
   accelerator = "kvm"
   headless    = true
 
-  http_directory = "packer/http"  # will serve cloud-init (user-data/meta-data)
+  http_directory = "http"  # will serve cloud-init (user-data/meta-data)
 
   ssh_username = "ubuntu"   # autoinstall will create user 'ubuntu' per user-data below
   ssh_timeout  = "30m"
@@ -51,15 +51,15 @@ build {
   sources = ["source.qemu.ubuntu"]
 
   provisioner "shell" {
-    script = "packer/scripts/install.sh"
+    script = "scripts/install.sh"
   }
 
   provisioner "shell" {
-    script = "packer/scripts/cleanup.sh"
+    script = "scripts/cleanup.sh"
   }
 
   # final artifact location
   post-processor "compress" {
-    output = "artifacts/{{user `image_name`}}.qcow2"
+    output = "artifacts/${var.image_name}.qcow2"
   }
 }
