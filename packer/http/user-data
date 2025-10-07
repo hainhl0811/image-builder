@@ -1,0 +1,25 @@
+#cloud-config
+autoinstall:
+  version: 1
+  identity:
+    hostname: packer-image
+    username: ubuntu
+    # best to use SSH key; set the key from packer variable or CI secret
+    ssh:
+      authorized-keys:
+        - ${ssh_authorized_key}
+  locale: en_US.UTF-8
+  keyboard:
+    layout: us
+  network:
+    network:
+      version: 2
+  storage:
+    layout:
+      name: direct
+  packages:
+    - qemu-guest-agent
+  late-commands:
+    - curtin in-target --target=/target -- apt-get update
+    - curtin in-target --target=/target -- apt-get -y upgrade
+    - curtin in-target --target=/target -- systemctl enable qemu-guest-agent
