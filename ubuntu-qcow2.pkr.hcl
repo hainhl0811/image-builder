@@ -22,7 +22,7 @@ source "qemu" "ubuntu" {
   iso_checksum     = "file:https://releases.ubuntu.com/22.04/SHA256SUMS"
   output_directory = "output/${var.image_name}"
 
-  # qcow2 output format
+  # qcow2 output formatimage.png
   format           = "qcow2"
   disk_size        = "20G"
   disk_interface   = "virtio"
@@ -41,11 +41,11 @@ source "qemu" "ubuntu" {
   ssh_password = "ubuntu"   # temporary password set in user-data
   ssh_timeout  = "30m"
 
-  # Boot command for Ubuntu 22.04 autoinstall - simplified approach
+  # Boot command for Ubuntu 22.04 with preseed
   boot_command = [
     "<wait><wait><wait><esc><wait><wait>",
     "c<wait><wait>",
-    "linux /casper/vmlinuz autoinstall ds='nocloud-net;s=http://{{ .HTTPIP }}:{{ .HTTPPort }}/'<enter>",
+    "linux /casper/vmlinuz file=/cdrom/preseed/ubuntu-server.seed auto=true priority=critical url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/preseed.cfg ---<enter>",
     "initrd /casper/initrd<enter>",
     "boot<enter>"
   ]
