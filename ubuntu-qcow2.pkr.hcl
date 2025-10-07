@@ -28,8 +28,8 @@ source "qemu" "ubuntu" {
   disk_interface   = "virtio"
   net_device       = "virtio-net"
   accelerator      = "kvm"
-  headless         = false  # Set to false temporarily to debug via VNC
-  vnc_bind_address = "0.0.0.0"
+  headless         = true   # Must be true for headless runner
+  vnc_bind_address = "0.0.0.0"  # VNC still works in headless mode
   qemuargs = [
     ["-cpu", "host"],
     ["-m", "2048M"]
