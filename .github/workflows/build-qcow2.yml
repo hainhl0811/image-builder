@@ -46,6 +46,23 @@ jobs:
           echo "✅ All dependencies are installed"
           packer version
           qemu-system-x86_64 --version | head -n1
+          
+          echo ""
+          echo "Checking KVM support..."
+          if [ -e /dev/kvm ]; then
+            echo "✅ /dev/kvm exists"
+            ls -l /dev/kvm
+            if [ -r /dev/kvm ] && [ -w /dev/kvm ]; then
+              echo "✅ Current user has read/write access to /dev/kvm"
+            else
+              echo "⚠️  Current user does NOT have access to /dev/kvm"
+              echo "Run: sudo usermod -aG kvm $USER"
+              echo "Then restart the runner service"
+            fi
+          else
+            echo "❌ /dev/kvm does not exist - KVM is not available"
+            echo "This runner may not support hardware virtualization"
+          fi
 
       - name: Packer init & validate
         env:
@@ -57,6 +74,7 @@ jobs:
       - name: Build image
         env:
           SSH_PUB_KEY: ${{ secrets.SSH_PUB_KEY }}
+          PACKER_LOG: 1
         run: |
           VERSION=$(date +%Y%m%d%H%M)
           packer build -var "image_name=ubuntu-22.04-${VERSION}" -var "ssh_authorized_key=${SSH_PUB_KEY}" ubuntu-qcow2.pkr.hcl
