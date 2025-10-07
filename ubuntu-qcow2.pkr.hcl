@@ -22,13 +22,14 @@ source "qemu" "ubuntu" {
   iso_checksum     = "file:https://releases.ubuntu.com/22.04/SHA256SUMS"
   output_directory = "output/${var.image_name}"
 
-  # qcow2 output format optimized for OpenStack
+  # qcow2 output format
   format           = "qcow2"
   disk_size        = "20G"
   disk_interface   = "virtio"
   net_device       = "virtio-net"
   accelerator      = "kvm"
-  headless         = true
+  headless         = false  # Set to false temporarily to debug via VNC
+  vnc_bind_address = "0.0.0.0"
   qemuargs = [
     ["-cpu", "host"],
     ["-m", "2048M"]
@@ -40,17 +41,16 @@ source "qemu" "ubuntu" {
   ssh_password = "ubuntu"   # temporary password set in user-data
   ssh_timeout  = "30m"
 
-  # Boot command for Ubuntu 22.04 autoinstall
+  # Boot command for Ubuntu 22.04 autoinstall - simplified approach
   boot_command = [
-    "<wait5>",
-    "e<wait>",
-    "<down><down><down>",
-    "<end><wait>",
-    "<bs><bs><bs><bs>autoinstall ds=nocloud-net\\;s=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ ---<wait>",
-    "<f10><wait>"
+    "<wait><wait><wait><esc><wait><wait>",
+    "c<wait><wait>",
+    "linux /casper/vmlinuz autoinstall ds='nocloud-net;s=http://{{ .HTTPIP }}:{{ .HTTPPort }}/'<enter>",
+    "initrd /casper/initrd<enter>",
+    "boot<enter>"
   ]
 
-  boot_wait = "5s"
+  boot_wait = "3s"
 }
 
 build {
