@@ -51,18 +51,18 @@ jobs:
         env:
           SSH_PUB_KEY: ${{ secrets.SSH_PUB_KEY }}
         run: |
-          packer init packer/ubuntu-qcow2.pkr.hcl
-          packer validate packer/ubuntu-qcow2.pkr.hcl
+          packer init ubuntu-qcow2.pkr.hcl
+          packer validate ubuntu-qcow2.pkr.hcl
 
       - name: Build image
         env:
           SSH_PUB_KEY: ${{ secrets.SSH_PUB_KEY }}
         run: |
           VERSION=$(date +%Y%m%d%H%M)
-          packer build -var "image_name=ubuntu-22.04-${VERSION}" -var "ssh_authorized_key=${SSH_PUB_KEY}" packer/ubuntu-qcow2.pkr.hcl
+          packer build -var "image_name=ubuntu-22.04-${VERSION}" -var "ssh_authorized_key=${SSH_PUB_KEY}" ubuntu-qcow2.pkr.hcl
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: qcow2-image
-          path: packer/output/
+          path: output/
