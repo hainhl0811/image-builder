@@ -56,10 +56,9 @@ build {
     inline = [
       "mkdir -p ~/.ssh",
       "chmod 700 ~/.ssh",
-      "echo '${var.ssh_authorized_key}' >> ~/.ssh/authorized_keys",
+      "if [ -n '${var.ssh_authorized_key}' ]; then echo '${var.ssh_authorized_key}' >> ~/.ssh/authorized_keys; fi",
       "chmod 600 ~/.ssh/authorized_keys"
     ]
-    only_if = "${var.ssh_authorized_key != \"\"}"
   }
 
   provisioner "shell" {
