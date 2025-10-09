@@ -1,21 +1,26 @@
 #cloud-config
-autoinstall:
-  version: 1
-  refresh-installer:
-    update: no
-  identity:
-    hostname: ubuntu
-    username: ubuntu
-    password: "$6$xyz$6zq7BRXqHbSKEqHLvFc5xLQqJ8xNLWw9n2RNbJNnJNnJNnJNnJNnJNnJNnJNnJNnJNnJNnJNnJNnJNnJNnJNn1"
-  ssh:
-    install-server: yes
-    allow-pw: yes
-  locale: en_US
-  keyboard:
-    layout: us
-  storage:
-    layout:
-      name: direct
-  late-commands:
-    - echo 'ubuntu ALL=(ALL) NOPASSWD:ALL' > /target/etc/sudoers.d/ubuntu
-    - curtin in-target --target=/target -- chmod 440 /etc/sudoers.d/ubuntu
+users:
+  - name: ubuntu
+    passwd: "$6$rounds=4096$saltsalt$YwFyN0jK5p6k8kx/k1m5H9K8Z0L.M9N0P1Q2R3S4T5U6V7W8X9Y0Z1A2B3C4D5E6F7G8H9I0J1K2L3M4N5O6P7Q0"
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    shell: /bin/bash
+    groups: sudo
+
+ssh_pwauth: true
+password_authentication: true
+
+package_update: true
+package_upgrade: true
+
+packages:
+  - qemu-guest-agent
+  - curl
+  - wget
+  - vim
+  - net-tools
+
+runcmd:
+  - systemctl enable ssh
+  - systemctl start ssh
+  - systemctl enable qemu-guest-agent
+  - systemctl start qemu-guest-agent
