@@ -22,6 +22,7 @@ source "qemu" "ubuntu" {
   iso_url          = "https://cloud-images.ubuntu.com/releases/22.04/release/ubuntu-22.04-server-cloudimg-amd64.img"
   iso_checksum     = "file:https://cloud-images.ubuntu.com/releases/22.04/release/SHA256SUMS"
   output_directory = "output/${var.image_name}"
+  disk_image       = true  # Source is a disk image, not an ISO
 
   # qcow2 output format
   format           = "qcow2"
@@ -31,18 +32,19 @@ source "qemu" "ubuntu" {
   accelerator      = "kvm"
   headless         = true
   vnc_bind_address = "0.0.0.0"
+  
+  # Create cloud-init seed ISO
+  cd_files         = ["http/meta-data", "http/user-data"]
+  cd_label         = "cidata"
+  
   qemuargs = [
     ["-cpu", "host"],
     ["-m", "2048M"]
   ]
 
-  http_directory = "http"  # serves cloud-init user-data
-
   ssh_username = "ubuntu"   # cloud image default user
   ssh_password = "ubuntu"   # will be set via cloud-init
   ssh_timeout  = "10m"      # cloud images boot much faster
-
-  # No boot command needed - cloud image boots directly
 }
 
 build {
