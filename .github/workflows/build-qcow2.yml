@@ -30,12 +30,16 @@ jobs:
             MISSING_DEPS+=("qemu-utils")
           fi
           
+          if ! command -v xorriso &> /dev/null; then
+            MISSING_DEPS+=("xorriso")
+          fi
+          
           if [ ${#MISSING_DEPS[@]} -ne 0 ]; then
             echo "❌ Missing dependencies: ${MISSING_DEPS[*]}"
             echo ""
             echo "Please install them on your self-hosted runner:"
             echo "  sudo apt-get update"
-            echo "  sudo apt-get install -y qemu-system-x86 qemu-utils"
+            echo "  sudo apt-get install -y qemu-system-x86 qemu-utils xorriso"
             echo "  # For Packer:"
             echo "  curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -"
             echo "  sudo apt-add-repository \"deb [arch=amd64] https://apt.releases.hashicorp.com \$(lsb_release -cs) main\""
@@ -46,6 +50,7 @@ jobs:
           echo "✅ All dependencies are installed"
           packer version
           qemu-system-x86_64 --version | head -n1
+          xorriso --version | head -n1
           
           echo ""
           echo "Checking KVM support..."
