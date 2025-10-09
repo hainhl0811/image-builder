@@ -1,26 +1,18 @@
 #cloud-config
-users:
-  - name: ubuntu
-    passwd: "$6$rounds=4096$saltsalt$YwFyN0jK5p6k8kx/k1m5H9K8Z0L.M9N0P1Q2R3S4T5U6V7W8X9Y0Z1A2B3C4D5E6F7G8H9I0J1K2L3M4N5O6P7Q0"
-    sudo: ALL=(ALL) NOPASSWD:ALL
-    shell: /bin/bash
-    groups: sudo
+# Simple cloud-init configuration for Packer
+chpasswd:
+  expire: false
+  list:
+    - ubuntu:ubuntu
 
 ssh_pwauth: true
-password_authentication: true
 
-package_update: true
-package_upgrade: true
-
-packages:
-  - qemu-guest-agent
-  - curl
-  - wget
-  - vim
-  - net-tools
+users:
+  - name: ubuntu
+    lock_passwd: false
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    shell: /bin/bash
+    groups: [adm, cdrom, dip, plugdev, sudo]
 
 runcmd:
-  - systemctl enable ssh
-  - systemctl start ssh
-  - systemctl enable qemu-guest-agent
-  - systemctl start qemu-guest-agent
+  - systemctl restart ssh
